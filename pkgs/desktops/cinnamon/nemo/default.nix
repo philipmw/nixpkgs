@@ -10,7 +10,6 @@
 , wrapGAppsHook
 , libxml2
 , gtk3
-, libnotify
 , gvfs
 , cinnamon-desktop
 , xapps
@@ -24,7 +23,7 @@
 
 stdenv.mkDerivation rec {
   pname = "nemo";
-  version = "5.2.4";
+  version = "5.4.1";
 
   # TODO: add plugins support (see https://github.com/NixOS/nixpkgs/issues/78327)
 
@@ -32,7 +31,7 @@ stdenv.mkDerivation rec {
     owner = "linuxmint";
     repo = pname;
     rev = version;
-    sha256 = "sha256-v63dFiBKtLCmRnwJ6u814lSv+tfPG+IIJtcWCnOEZjk=";
+    sha256 = "sha256-Z97eFfqALBEFj1LMVx3JchVkxCio4sYyXKvMgED6fT8=";
   };
 
   outputs = [ "out" "dev" ];
@@ -40,7 +39,6 @@ stdenv.mkDerivation rec {
   buildInputs = [
     glib
     gtk3
-    libnotify
     cinnamon-desktop
     libxml2
     xapps
