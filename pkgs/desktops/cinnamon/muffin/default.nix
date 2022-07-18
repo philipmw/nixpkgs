@@ -51,7 +51,6 @@ stdenv.mkDerivation rec {
     cinnamon-desktop
     dbus
     glib
-    graphene
     gtk3
     json-glib
     libcanberra-gtk3
@@ -64,6 +63,10 @@ stdenv.mkDerivation rec {
     mesa
     pipewire
     udev
+  ];
+
+  propagatedBuildInputs = [
+    graphene
   ];
 
   meta = with lib; {
