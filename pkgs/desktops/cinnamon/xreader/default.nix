@@ -47,7 +47,6 @@ stdenv.mkDerivation rec {
 
   mesonFlags = [
     "-Dmathjax-directory=${nodePackages.mathjax}"
-    "-Dc_args=-I${glib.dev}/include/gio-unix-2.0"
   ] ++ (map (x: "-D${x}=true") backends);
 
   buildInputs = [
