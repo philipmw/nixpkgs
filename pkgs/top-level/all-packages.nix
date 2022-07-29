@@ -36228,4 +36228,6 @@ with pkgs;
   swift-corelibs-libdispatch = callPackage ../development/libraries/swift-corelibs-libdispatch { };
 
   swaysettings = callPackage ../applications/misc/swaysettings { };
+
+  ganache = callPackage ../applications/blockchains/ganache { };
 }
