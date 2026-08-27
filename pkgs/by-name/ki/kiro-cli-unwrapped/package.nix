@@ -3,10 +3,17 @@
   stdenv,
   fetchurl,
   autoPatchelfHook,
+  makeBinaryWrapper,
   undmg,
   versionCheckHook,
   xz,
   bzip2,
+  wl-clipboard,
+  # On Wayland, kiro-cli shells out to wl-clipboard (wl-copy/wl-paste) for
+  # clipboard access. Enabling this puts wl-clipboard on the runtime PATH so
+  # clipboard support works out of the box under Wayland sessions. Has no
+  # effect on Darwin.
+  waylandSupport ? stdenv.hostPlatform.isLinux,
 }:
 
 # The raw upstream binaries, autoPatchelf'd so kiro-cli itself runs on NixOS.
@@ -46,6 +53,9 @@ stdenv.mkDerivation (finalAttrs: {
     lib.optionals stdenv.hostPlatform.isLinux [
       autoPatchelfHook
     ]
+    ++ lib.optionals (stdenv.hostPlatform.isLinux && waylandSupport) [
+      makeBinaryWrapper
+    ]
     ++ lib.optionals stdenv.hostPlatform.isDarwin [
       undmg
     ];
@@ -69,6 +79,12 @@ stdenv.mkDerivation (finalAttrs: {
     install -Dm755 bin/kiro-cli      -t $out/bin
     install -Dm755 bin/kiro-cli-chat -t $out/bin
     install -Dm755 bin/kiro-cli-term -t $out/bin
+  ''
+  + lib.optionalString (stdenv.hostPlatform.isLinux && waylandSupport) ''
+    for bin in kiro-cli kiro-cli-chat kiro-cli-term; do
+      wrapProgram $out/bin/$bin \
+        --suffix PATH : ${lib.makeBinPath [ wl-clipboard ]}
+    done
   ''
   + lib.optionalString stdenv.hostPlatform.isDarwin ''
     mkdir -p $out/bin $out/Applications
