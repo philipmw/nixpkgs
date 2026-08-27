@@ -36,6 +36,22 @@ let
     pname = "kiro-cli";
     inherit version;
 
+    # kiro-cli shells out to `wl-copy` (wl-clipboard, in targetPkgs below) for
+    # clipboard access. `wl-copy` forks a background process that owns the
+    # Wayland selection; that process is supposed to keep running until the next
+    # copy replaces it — it is how the Wayland clipboard persists at all.
+    # buildFHSEnv defaults to `dieWithParent = true`, which makes bwrap kill
+    # every process in the sandbox the moment the kiro-cli invocation exits,
+    # taking the wl-copy owner with it — so anything copied to the clipboard
+    # would be gone before the user pastes. Mirroring `dropbox` and `houdini`
+    # (which likewise need a spawned daemon to outlive the launcher), opt out.
+    dieWithParent = false;
+    # Must stay without a private PID namespace: with unsharePid = true the
+    # kernel SIGKILLs every remaining process in the namespace when the
+    # sandbox's init (kiro-cli) exits, re-introducing the death of the wl-copy
+    # owner that turning off `dieWithParent` was supposed to avoid.
+    unsharePid = false;
+
     runScript = writeShellScript "kiro-cli" ''
       command="$1"
       shift
